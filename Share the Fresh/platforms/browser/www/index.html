@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2016 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <!-- This is a wide open CSP declaration. To lock this down for production, see below. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+    <!-- Good default declaration:
+    * gap: is required only on iOS (when using UIWebView) and is needed for JS->native communication
+    * https://ssl.gstatic.com is required only on Android and is needed for TalkBack to function properly
+    * Disables use of eval() and inline scripts in order to mitigate risk of XSS vulnerabilities. To change this:
+        * Enable inline JS: add 'unsafe-inline' to default-src
+        * Enable eval(): add 'unsafe-eval' to default-src
+    * Create your own at http://cspisawesome.com
+    -->
+    <!-- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' https://ssl.gstatic.com; style-src 'self' 'unsafe-inline'; media-src *" /> -->
+
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    
+   <meta name="Description" content="An AI Based Nutrition and Charity Project">
+    <title>Share The Fresh</title>
+
+    <!-- Bootstrap -->
+	<link href="css/bootstrap.css" rel="stylesheet">
+	<link href="css/animate.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Damion" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300|Raleway|Slabo+27px" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Reenie+Beanie" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Special+Elite" rel="stylesheet">
+</head>
+
+<body>
+    <div style=" background-color:whitesmoke; cover; font-family: 'Raleway', sans-serif; color: #363636;background-repeat: no-repeat; background-position: center center; background-attachment: fixed; overflow-x: hidden; width: 100vw;">
+        <div class="container-fluid" style="overflow-x: hidden;width: 100vw;">
+  		<div class="row" style="margin-bottom: 0vh;">
+  			<div class="col-xs-12 col-xs-offset-0 col-sm-12 col-sm-offset-0 text-center" style=" background-image: url(img/LeafyHeader2.png); background-size: cover; background-position: center center; border: 1px solid; border-color: darkgray;padding-bottom: 8px; border-radius: 00px; border-bottom: lightblue solid 6px;">
+				<h1 style="font-family: 'Damion', cursive; display: none;">Share the Fresh</h1>
+				<div class="col-xs-10 col-xs-offset-1 col-sm-3 col-sm-offset-2">
+				<img src="img/FreshLogo1.png" alt="Share the Fresh" class="img-responsive" width="100%"  style="padding-top: 18px;" />
+				<h4>An AI Based Nutrition and Charity Project</h4>	
+				</div>
+					<div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-0">
+					
+			<h2 class = "dailyTip box" id="dailyTip" style="padding: 8px;"></h2>
+				<h4 class="box" style="padding: 8px;"><a id="link" class="twitter-share-button"
+  href="https://twitter.com/intent/tweet?text=I%20just%20used%20ShareTheFresh%20to%20help%20me%20diet%20and%20save!" style="color: black;">
+				
+					Tell Your Friends and Share the Fresh</a></h4>
+				
+				</div>
+						
+				
+				<!--<div class = "col-xs-2 col-xs-offset1"><img src="img/tipIcon.png" width="100%" class="img-responsive" alt="Tip Icon"></div>-->
+				
+			</div>
+			</div>
+			
+			<div class="row">
+			<div class="col-xs-12 col-xs-offset-0 text-center" style=" background-size:cover; padding: background-repeat:no-repeat; background-position: center center; background-attachment: fixed; 12px;opacity: 1.0; box-shadow: 4px 4px black; padding-top: 12px;">
+				<div class="col-xs-10 col-xs-offset-1" style="padding-bottom: 12vh; padding-left: 5vw;">
+				<div class="container-fluid" id="content" ></div>
+					<div class="col-xs-12 col-xs-offset-0 col-sm-4 col-sm-offset-4"><p id ="mainText" class="shadow2">Enter a link to the photo of your groceries</p></div>
+					 <input type="text" id="imgurl"  placeholder="Image URL" style=" border-radius: 5px; width: 30vw;"/>
+    <button style="color:black; margin-top: 2px;" class="btn" id="mainButton">GET STARTED</button>
+					
+					<div class="container-fluid text-center" id="pinboard">
+					</div>
+					<div class="container-fluid" id="Parameters" style="margin-top: 12px;">
+					<div class="col-xs-4">
+					<div class="form-group">
+						<label for="dailyCalories">Daily Calories:</label>
+					<input type="text" id="dailyCalories" placeholder="Calories" style="width: 90%">
+						</div>
+						</div>
+						<div class="col-xs-4">
+					<div class="form-group">
+						<label for="dailyCalories">Daily Protein:</label>
+					<input type="text" id="dailyProtein" placeholder="Protein" style="width: 90%">
+						</div>
+						</div>
+						<div class="col-xs-4">
+					<div class="form-group">
+						<label for="dailyCalories">Daily Fat:</label>
+					<input type="text" id="dailyFat" placeholder="Fat" style="width: 90%">
+						</div>
+
+						</div>
+						<div class="col-xs-8 col-xs-offset-4 col-sm-4 col-sm-offset-4">
+						<button id="submit" style="width: 100%; margin: 8px;" class="btn">Calculate Meal Plan</button>
+						</div>
+					</div>
+					<div class="container-fluid" id="secondary" style="margin-top: 12px;"></div>
+					<div class="container-fluid" id="third"></div>
+					<div class="container-fluid" id="shelters">
+						<h2 class="text-center"> Connect to Local Food Banks to Donate Excess Food</h2>
+      <div class="col-xs-12 col-sm-6 col-xs-offset-0 col-sm-offset-3">
+		  <iframe width="100%" frameborder="0" style="border:0" src="https://www.google.com/maps/embed/v1/search?q=food%20pantry&key=AIzaSyA9EIWyEjrb2HzP1ljo077WmBRG8FhyhCc" style="height: 25vw; min-height: 250px;" allowfullscreen></iframe></div>
+
+					</div>
+				</div>
+			</div>
+
+	  </div>
+		</div>
+    </div>
+    <script src="js/axios.min.js"></script>
+  <script type="text/javascript" src="js/keys.js"></script>
+		<script type="text/javascript" src="js/index2.js"></script>
+    <script src="js/foodDatabase.js"></script>
+	  <script src ="js/nutritionTips.js"></script>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="js/jquery-1.11.3.min.js"></script>
+
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="js/bootstrap.js"></script>
+	<script type="text/javascript">
+		function firstButton(){
+			run(document.getElementById('imgurl').value)
+		}
+		document.getElementById("mainButton").addEventListener("click",firstButton);
+		document.getElementById("submit").addEventListener("click",calculate);
+		document.getElementById('Parameters').style.visibility = "hidden";
+		document.getElementById('shelters').style.visibility = "hidden";
+		var d = new Date();
+		var tipText = document.createTextNode("Tip of the Day: "+ nutritionTips[d.getDate()]);
+		document.getElementById('dailyTip').appendChild(tipText);
+			var str = "https://twitter.com/intent/tweet?text=";
+			var addition = "Check out www.sharethefresh.life";
+			str+= nutritionTips[d.getDate()].replace(" ","%20");
+			str+= "%20"+addition.replace(" ","%20");
+			document.getElementById('link').href = str;
+	  </script>
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+        app.initialize();
+    </script>
+</body>
+
+</html>
