@@ -2,10 +2,10 @@
 <widget id="com.austinlubetkin.sharethefresh" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>Share the Fresh</name>
     <description>
-        Hello World sample application that responds to the deviceready event.
+       An AI Based Nutrition and Charity Project
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+    <author email="bocaaust@gmail.com" href="http://www.austinlubetkin.com">
+        Austin Lubetkin
     </author>
     <content src="index.html" />
     <preference name="DisallowOverscroll" value="true" />
