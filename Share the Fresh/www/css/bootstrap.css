@@ -6781,6 +6781,7 @@ button.close {
 	text-decoration: none;
 	padding: 8px;
 	margin-top: 20px;
+	margin-left: 0px;
 	opacity: 0.85;
 	border: solid lightgrey 2px;
 	}
@@ -6789,6 +6790,19 @@ button.close {
 	text-decoration: none;
 	color: white;
 	
+}
+
+.tagItemGreen{
+	background-color:lightgreen;
+	color:black;
+}
+.tagItemYellow{
+	background-color:lightgoldenrodyellow;
+	color:black;
+}
+.tagItemRed{
+	background-color:lightcoral;
+	color:black;
 }
 .button {
 	background:none;

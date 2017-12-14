@@ -257,7 +257,7 @@ function parseResponse(resp) {
 	}
 	updateFields();
 	//pins[1][pins[1].length] = classes;
-	localStorage.setItem('pins',JSON.stringify(pins));
+	//localStorage.setItem('pins',JSON.stringify(pins));
 	//addNode(pins[0][pins[0].length - 1], classes);
 	//updateTopDestination(classes);
   //return classes;
@@ -282,7 +282,7 @@ function updateFields(){
 	hint.removeChild(hint.lastChild);
 	var hintText = document.createTextNode("Missing a Food? Enter it Below");
 	hint.appendChild(hintText);
-		
+		document.getElementById('upload').style.visibility="hidden";
 }
 
 function updateTopDestination(tags){
@@ -432,16 +432,16 @@ function remove(id){
 	for (var i = 0; i < children.length; i++) {
 		if (children[i].id === id){
 			pinboard.removeChild(children[i]);
-			var pins = JSON.parse(localStorage.getItem('pins'));
+			//var pins = JSON.parse(localStorage.getItem('pins'));
 			/*for (var n = i+1; n < pins[1].length; n++){
 				pins[1][n-1] = pins[1][n];
 				pins[2][n-1] = pins[2][n];
 			}
 			pin[1][pins.length - 1] = */
 			//removeDestination(pins[1][i]);
-			pins[1].splice(i,1);
-			pins[0].splice(i,1);
-			localStorage.setItem('pins',JSON.stringify(pins));
+			//pins.splice(i,1);
+			//pins[0].splice(i,1);
+			//localStorage.setItem('pins',JSON.stringify(pins));
 			break;
 		}
 	}
@@ -591,6 +591,66 @@ function searchAirbnb(destination){
   });
 }
 
+function handleFiles(imgfile){
+	 
+
+	var content = document.getElementById('content');
+	var item = document.createElement("DIV");
+	item.id = 'box';
+	item.className += "animated fadeIn first col-xs-12 col-sm-6 col-xs-offset-0 col-sm-offset-3";
+	//item.style.margin = "0px";
+	//item.style.height = "55vh";
+	//item.width -= 8;
+	var hero = document.createElement("IMG");
+	hero.className+="img-thumbnail";
+	hero.style.marginTop = "12px";
+	hero.style.width = "100%";
+	hero.style.padding = "8px";
+	//hero.src = imgurl;
+	if (FileReader && imgfile && imgfile.length) {
+        var fr = new FileReader();
+		//var fileString = "";
+		//var fileString;
+        fr.onload = function () {
+			hero.src=fr.result;
+				var input = {    
+     "inputs": [      
+       {        
+          "data": {          
+             "image": {            
+                "base64": fr.result.replace(/^data:image\/(png|jpg|jpeg);base64,/, "")
+			 }    
+          }      
+       }    
+     ]  
+};
+  var url = 'https://api.clarifai.com/v2/models/bd367be194cf45149e75f01d59f77ba7/outputs';
+  return axios.post(url, input, {
+    'headers': {
+      'Authorization': 'Key ' + API_KEY,
+		'Content-Type': 'application/json'
+    }
+  }).then(function(r) {
+    parseResponse(r.data);
+  }, function(err) {
+    console.log('Sorry, something is wrong: ' + err);
+  });
+			//fileString = fr.result;
+        };
+        fr.readAsDataURL(imgfile[0]);
+		item.appendChild(hero);
+		content.appendChild(item);
+		//console.log(fr.result);
+		
+	
+    }
+	
+	
+	
+}
+
+
+
 function run(imgurl) {
 	
 	/*if (localStorage.getItem('data') === null){
@@ -660,14 +720,19 @@ function collectPins(){
 
 function collectNutrition(pins) {
 	var output = [];
-	for (var i=0; i < pins.length; i++){
+	//var pins2 = pins;
+	var newPins = [];
+	var i = pins.length;
+	while(i--){
 		if(pins[i] in food){
 		output.push(food[pins[i]]);
+			newPins.push(pins[i]);
 		}else{
 			remove(pins[i]);
 			pins.splice(i,1);
 		}
 	}
+	pins = newPins;
 	return output;
 }
 
@@ -685,75 +750,181 @@ function clearThree(){
 }
 }
 
+function clearFour(){
+	var node = document.getElementById('fourth');
+	while (node.hasChildNodes()) {
+    node.removeChild(node.lastChild);
+}
+}
+
+function dairyPins(pins){
+	var output = pins;
+	var containsDairy = false;
+	for(var i = 0; i < output.length; i++){
+		if(food[output[i]][3] == 'dairy'){
+			containsDairy = true;
+		}
+		if(food[output[i]][3] == 'sour' || food[output[i]][3] == 'vegetable' || food[output[i]][3] == 'condiment'){
+			output.splice(i,1);
+		}
+	}
+	if (containsDairy){
+		return output;
+	}else{
+		return false;
+	}
+}
+
 function calculate(){
 	clearTwo();
 	clearThree();
+	clearFour();
+	var tipFood = "";
 	console.log("starting calculation");
 	var pins = collectPins();
 	var facts = collectNutrition(pins);
 	var meals = [];
-	var targetCalories = document.getElementById('dailyCalories').value;
-	var targetProteint = document.getElementById('dailyProtein').value;
-	var targetFat = document.getElementById('dailyFat').value;
+	var nutrition = [];
+	var targetCalories = document.getElementById('dailyCalories').value/3;
+	var targetProteint = document.getElementById('dailyProtein').value/3;
+	var targetFat = document.getElementById('dailyFat').value/3;
 	var temp = [];
 	var calorieTotal = 0;
 	var fatTotal = 0;
 	var proteinTotal = 0;
 	var accuracy = 0.65;
+	var backupPins = pins;
+	//pins = dairyPins(pins);
+	//if (pins != false){
+	var notGross = true;
 	var letLen = Math.pow(2, pins.length);
 	for (var i = 0; i < letLen ; i++){
     temp= [];
 	calorieTotal = 0;
 	proteinTotal = 0;
 		fatTotal = 0;
-	
+	var has = [];
+		has['dairy'] = false;
+		has['sweet'] = false;
+		has['sour'] = false;
+		has['condiment'] = false;
+		has['vegetable'] = false;
+		has['savory'] = false;
+		has['everything'] = false;
+		notGross = true;
     for (var j=0;j<pins.length;j++) {
+		
         if ((i & Math.pow(2,j))){ 
-			calorieTotal+=facts[j][0];
-			fatTotal+=facts[j][1];
-			proteinTotal+=facts[j][1];
+			calorieTotal+=food[pins[j]][0]
+			fatTotal+=food[pins[j]][1]
+			proteinTotal+=food[pins[j]][2]
             temp.push(pins[j]);
+			if (calorieTotal > targetCalories || fatTotal > targetFat || proteinTotal > targetProteint){
+				break;
+			}
+			has[food[pins[j]][3]] = true;
+			if ((has['dairy'] && (has['sour'] || has['condiment'] || has['vegetable'])) ||(has['sweet'] && (has['condiment'] || has['savory'])) || (has['condiment'] && (has['vegetable']))){
+				notGross = false;
+				break;
+			}
         }
     }
-		console.log(temp);
-    if (calorieTotal >= targetCalories*accuracy && calorieTotal <= targetCalories && fatTotal >= targetFat*accuracy && fatTotal <= targetFat && targetProteint >= proteinTotal*accuracy && targetProteint <= proteinTotal) {
+		
+	if (notGross){
+    if (calorieTotal >= targetCalories*accuracy && calorieTotal <= targetCalories && fatTotal >= targetFat*accuracy && fatTotal <= targetFat && proteinTotal >= targetProteint*accuracy && proteinTotal <= targetProteint && meals.includes(temp) == false) {
+		//
+		console.log(calorieTotal);
         meals.push(temp);
+		var nutritionList = [calorieTotal,fatTotal,proteinTotal];
+		nutrition.push(nutritionList);
     }
+	}
 }
+//	}
+	
 	var excess = [];
 	for(var l = 0; l < pins.length; l++){
 		excess[l] = true;
 	}
 	var mealTitle = document.createElement("H3");
 	var mealTitleText = document.createTextNode("Here is a list of your potential meals");
-	var excessTitle = document.createElement("H3");
-	var excessTitleText = document.createTextNode("Here is a list of excess items purchased you can donate")
-	excessTitle.appendChild(excessTitleText);
-	document.getElementById('third').appendChild(excessTitle);
+	
+
+	
 	mealTitle.appendChild(mealTitleText);
 	document.getElementById('secondary').appendChild(mealTitle);
+	if (meals.length == 0){
+		var mealString = "No combinations of groceries found that meet your nutritional guidelines"
+		var mealItem = document.createElement("H4");
+		var mealItemText = document.createTextNode(mealString);
+		mealItem.appendChild(mealItemText);
+		document.getElementById('secondary').appendChild(mealItem);
+	}else{
+		var random = Math.floor(Math.random()*meals.length)
+		tipFood = meals[random][Math.floor(Math.random()*meals[random].length)];
+		if (food[tipFood].length > 4){
+		var suggestionTitle = document.createElement("H3");
+		var suggestionTitleText = document.createTextNode("Based off your interest in "+tipFood);
+		suggestionTitle.appendChild(suggestionTitleText);
+		document.getElementById('fourth').appendChild(suggestionTitle);
+			var suggestionLink = document.createElement("A");
+		suggestionLink.href = food[tipFood][4];
+		var suggestionContainer = document.createElement("DIV");
+		suggestionContainer.className+="col-xs-10 col-xs-offset-1 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3";
+		var suggestionImage = document.createElement("IMG");
+		suggestionImage.src = food[tipFood][6];
+		suggestionImage.style.width ="100%";
+		suggestionImage.className+="img-responsive img-thumbnail";
+		suggestionImage.alt = food[tipFood][5];
+		suggestionContainer.appendChild(suggestionImage);
+		//document.getElementById('fourth').appendChild(suggestionContainer);
+		var suggestionText = document.createElement("H4");
+		
+		var suggestionLinkText = document.createTextNode(food[tipFood][5]);
+		//suggestionLink.appendChild(suggestionLinkText);
+		suggestionText.appendChild(suggestionLinkText);
+		suggestionContainer.appendChild(suggestionText);
+			suggestionLink.appendChild(suggestionContainer);
+		document.getElementById('fourth').appendChild(suggestionLink);
+		}
+		//document.getElementById('fourth').appendChild(suggestionText);
 	for(var u=0; u < meals.length; u++){
 		var mealString = (u+1)+". ";
 		mealString+=meals[u][0];
 		for (var c =1; c< meals[u].length; c++){
 			mealString+=", " + meals[u][c];
 		}
+		mealString += "   Calories: " +nutrition[u][0]+"\tFat: " +nutrition[u][1]+"\tProtein: "+nutrition[u][2];
 		var mealItem = document.createElement("H4");
 		var mealItemText = document.createTextNode(mealString);
 		mealItem.appendChild(mealItemText);
 		document.getElementById('secondary').appendChild(mealItem);
 		for (var g = 0; g < pins.length; g++){
 				if (meals[u].includes(pins[g])){
-					console.log(pins[g]);
+					//console.log(pins[g]);
 					excess[g] = false;
 				}
 			}
 	}
+	}
+	document.getElementById('shelters').style.visibility="hidden";
 	
+		if (excess.includes(true)){
+	var excessTitle = document.createElement("H3");
+	var excessTitleText = document.createTextNode("Here is a list of excess items purchased you can donate")
+	excessTitle.appendChild(excessTitleText);
+	document.getElementById('third').appendChild(excessTitle);
 	for(var r = 0; r< excess.length; r++){
 		if (excess[r]){
 			var excessItem = document.createElement("DIV");
 			excessItem.className+="col-xs-12 col-sm-4 animated fadeIn tagItem text-center";
+			if (food[pins[r]][3] == 'savory' || food[pins[r]][3] == 'vegetable' || (food[pins[r]][3] == 'sour' && pins[r] != 'beer' && pins[r] != 'vinegar' && pins[r] != 'cider') || fruits.includes(pins[r])){
+				excessItem.className+=" tagItemGreen";
+			}else if (food[pins[r]][3] == 'dairy' || yellow.includes(pins[r])){
+				excessItem.className+=" tagItemYellow";
+			}else{
+				excessItem.className+=" tagItemRed";
+			}
 			var excessItemText = document.createTextNode(pins[r]);
 			excessItem.appendChild(excessItemText);
 			document.getElementById('third').appendChild(excessItem);
@@ -762,6 +933,12 @@ function calculate(){
 	}
 	
 	document.getElementById('shelters').style.visibility="visible";
+	}else{
+		document.getElementById('shelters').style.visibility="hidden";
+	}
+	
+	
+	
 	
 	
 }
